@@ -1,0 +1,233 @@
+{
+  "info": {
+    "name": "Archives Backend API",
+    "description": "Complete API collection for the Archives Backend service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3005",
+      "type": "string"
+    },
+    {
+      "key": "archive_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Archives",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Archive Entry (Full)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('archive_id', response.data.id);",
+              "    console.log('Archive ID saved:', response.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": 42.5,\n  \"timestamp\": \"2025-06-02T10:30:00Z\",\n  \"metadata\": {\n    \"source\": \"temperature_sensor\",\n    \"location\": \"server_room\",\n    \"unit\": \"celsius\",\n    \"device_id\": \"temp_001\",\n    \"battery_level\": 85\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Archive Entry (Simple)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": 37.2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Test Data - Temperature",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": 23.5,\n  \"metadata\": {\n    \"source\": \"temperature_sensor\",\n    \"location\": \"living_room\",\n    \"unit\": \"celsius\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Test Data - Humidity",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": 65.8,\n  \"metadata\": {\n    \"source\": \"humidity_sensor\",\n    \"location\": \"bedroom\",\n    \"unit\": \"percentage\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Single Archive",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/archives/{{archive_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives", "{{archive_id}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Archive",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": 45.8,\n  \"metadata\": {\n    \"source\": \"temperature_sensor\",\n    \"location\": \"server_room\",\n    \"unit\": \"celsius\",\n    \"device_id\": \"temp_001\",\n    \"calibrated\": true,\n    \"updated\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives/{{archive_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives", "{{archive_id}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Archive",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/archives/{{archive_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives", "{{archive_id}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test Error - Missing Number",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"timestamp\": \"2025-06-02T10:30:00Z\",\n  \"metadata\": {\n    \"source\": \"test\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/archives",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Test Error - Invalid ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/archives/invalid-id-12345",
+          "host": ["{{base_url}}"],
+          "path": ["api", "archives", "invalid-id-12345"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
