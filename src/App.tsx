@@ -57,23 +57,44 @@ function App() {
   useEffect(() => {
     const checkBackendHealth = async () => {
       try {
+        console.log('Checking backend health at:', `${API_BASE_URL}/health`)
+        
         const response = await fetch(`${API_BASE_URL}/health`, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          mode: 'cors', // Explicitly set CORS mode
+          cache: 'no-cache'
         })
+        
+        console.log('Health check response status:', response.status)
         
         if (response.ok) {
           setBackendStatus('online')
+          console.log('Backend is online!')
         } else {
+          console.log('Backend responded with error status:', response.status)
           setBackendStatus('offline')
         }
       } catch (error) {
         console.error('Backend health check failed:', error)
+        console.error('Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        })
         setBackendStatus('offline')
       }
     }
 
     checkBackendHealth()
+    
+    // Also check every 30 seconds to keep status updated
+    const healthCheckInterval = setInterval(checkBackendHealth, 30000)
+    
+    return () => clearInterval(healthCheckInterval)
   }, [])
 
   const submitArchiveData = async (data: ArchiveFormData) => {
@@ -94,12 +115,15 @@ function App() {
       }
 
       console.log('Sending payload:', payload)
+      console.log('Submitting to URL:', `${API_BASE_URL}/api/archives`)
 
       const response = await fetch(`${API_BASE_URL}/api/archives`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        mode: 'cors', // Explicitly set CORS mode
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(30000), // 30 second timeout
       })
@@ -168,6 +192,39 @@ function App() {
     }
   }
 
+  const testConnection = async () => {
+    try {
+      console.log('Testing connection to:', `${API_BASE_URL}/health`)
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        cache: 'no-cache'
+      })
+      
+      const data = await response.text()
+      console.log('Test response:', response.status, data)
+      
+      toast({
+        title: response.ok ? "✅ Connection Test Successful!" : "❌ Connection Test Failed",
+        description: `Status: ${response.status} - ${response.statusText}`,
+        variant: response.ok ? "default" : "destructive",
+        duration: 5000,
+      })
+    } catch (error) {
+      console.error('Connection test failed:', error)
+      toast({
+        title: "❌ Connection Test Failed",
+        description: `Error: ${error.message}`,
+        variant: "destructive",
+        duration: 5000,
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
@@ -194,6 +251,16 @@ function App() {
             }`}>
               Backend {backendStatus === 'checking' ? 'Checking...' : backendStatus === 'online' ? 'Online' : 'Offline'}
             </span>
+            {backendStatus === 'offline' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={testConnection}
+                className="ml-2 text-xs"
+              >
+                Test Connection
+              </Button>
+            )}
           </div>
         </CardHeader>
         
