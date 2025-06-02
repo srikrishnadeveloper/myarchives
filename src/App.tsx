@@ -22,7 +22,7 @@ interface ArchiveFormData {
   updated: boolean
 }
 
-const API_BASE_URL = 'http://localhost:3005'
+const API_BASE_URL = 'https://myarchives-backend.onrender.com'
 
 function App() {
   const [isLoading, setIsLoading] = useState(false)
